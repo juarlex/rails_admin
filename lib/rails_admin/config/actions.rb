@@ -98,6 +98,7 @@ module RailsAdmin
             HistoryShow.new,
             HistoryIndex.new,
             ShowInApp.new,
+            MoveRecordsPerAssociation.new
           ]
         end
 
@@ -118,4 +119,5 @@ require 'rails_admin/config/actions/edit'
 require 'rails_admin/config/actions/export'
 require 'rails_admin/config/actions/delete'
 require 'rails_admin/config/actions/bulk_delete'
+require 'rails_admin/config/actions/move_records_per_association'
 

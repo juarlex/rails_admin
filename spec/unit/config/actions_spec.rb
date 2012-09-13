@@ -4,7 +4,7 @@ describe RailsAdmin::Config::Actions do
 
   describe "default" do
     it 'should be as before' do
-      RailsAdmin::Config::Actions.all.map(&:key).should == [:dashboard, :index, :show, :new, :edit, :export, :delete, :bulk_delete, :history_show, :history_index, :show_in_app]
+      RailsAdmin::Config::Actions.all.map(&:key).should == [:dashboard, :index, :show, :new, :edit, :export, :delete, :bulk_delete, :history_show, :history_index, :show_in_app, :move_records_per_association]
     end
   end
 

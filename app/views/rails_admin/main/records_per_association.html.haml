@@ -1,0 +1,3 @@
+:ruby
+  property = @model_config.list.with(:view => self, :object => @abstract_model.model.new).visible_fields.select { |p| p if p.name == params[:association_name].to_sym }.first.bind(:object, @object)
+= property.pretty_value

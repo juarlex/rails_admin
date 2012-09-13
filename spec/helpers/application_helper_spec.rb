@@ -61,10 +61,10 @@ describe RailsAdmin::ApplicationHelper do
     it 'should return actions by type' do
       abstract_model = RailsAdmin::AbstractModel.new(Player)
       object = FactoryGirl.create :player
-      helper.actions(:all, abstract_model, object).map(&:custom_key).should == [:dashboard, :index, :show, :new, :edit, :export, :delete, :bulk_delete, :history_show, :history_index, :show_in_app]
+      helper.actions(:all, abstract_model, object).map(&:custom_key).should == [:dashboard, :index, :show, :new, :edit, :export, :delete, :bulk_delete, :history_show, :history_index, :show_in_app, :move_records_per_association]
       helper.actions(:root, abstract_model, object).map(&:custom_key).should == [:dashboard]
       helper.actions(:collection, abstract_model, object).map(&:custom_key).should == [:index, :new, :export, :bulk_delete, :history_index]
-      helper.actions(:member, abstract_model, object).map(&:custom_key).should == [:show, :edit, :delete, :history_show, :show_in_app]
+      helper.actions(:member, abstract_model, object).map(&:custom_key).should == [:show, :edit, :delete, :history_show, :show_in_app, :move_records_per_association]
     end
 
     it 'should only return visible actions, passing bindings correctly' do

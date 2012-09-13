@@ -17,7 +17,7 @@ module RailsAdmin
 
         register_instance_option(:pretty_value) do
           v = bindings[:view]
-          [value].flatten.select(&:present?).map do |associated|
+          html = [value].flatten.select(&:present?).map do |associated|
             amc = polymorphic? ? RailsAdmin::Config.model(associated) : associated_model_config # perf optimization for non-polymorphic associations
             am = amc.abstract_model
             wording = associated.send(amc.object_label_method)
@@ -25,6 +25,21 @@ module RailsAdmin
             can_see = can_see && (show_action = RailsAdmin::Config::Actions.find(:show, { :controller => v.controller, :abstract_model => am, :object => associated }))
             can_see ? v.link_to(wording, v.url_for(:action => show_action.action_name, :model_name => am.to_param, :id => associated.id), :class => 'pjax') : wording
           end.to_sentence.html_safe
+
+          if value.is_a? Array
+            wording = [value.model_name.to_s.pluralize.humanize, value.size].join(": ")
+            action = RailsAdmin::Config::Actions.find(:move_records_per_association, { :controller => v.controller, :abstract_model => abstract_model, :object => bindings[:object] })
+            icon_and_wording = v.content_tag(:span, wording, :class => action.link_icon)
+            html += v.tag("br")
+            html += v.link_to(icon_and_wording, v.url_for(:action => action.action_name,
+                                                          :model_name => abstract_model.to_param,
+                                                          :id => bindings[:object].id),
+                                                          :class => "drag-and-drop-associated-records #{value.model_name.pluralize.underscore} btn btn-medium",
+                                                          'acceptable-association' => value.model_name.pluralize.underscore,
+                                                          :remote => true)
+          end
+
+          html
         end
 
         # Accessor whether association is visible or not. By default
@@ -47,12 +62,12 @@ module RailsAdmin
             scope.limit(associated_collection_scope_limit)
           end
         end
-        
+
         # inverse relationship
         register_instance_option :inverse_of do
           association[:inverse_of]
         end
-        
+
         # preload entire associated collection (per associated_collection_scope) on load
         # Be sure to set limit in associated_collection_scope if set is large
         register_instance_option :associated_collection_cache_all do
@@ -68,17 +83,17 @@ module RailsAdmin
         def associated_object_label_method
           @associated_object_label_method ||= associated_model_config.object_label_method
         end
-        
+
         # Reader for associated primary key
         def associated_primary_key
           @associated_primary_key ||= association[:primary_key_proc].call
         end
-        
+
         # Reader for the association's key
         def foreign_key
           association[:foreign_key]
         end
-        
+
         # Reader whether this is a polymorphic association
         def polymorphic?
           association[:polymorphic]
@@ -93,12 +108,12 @@ module RailsAdmin
         def value
           bindings[:object].send(association[:name])
         end
-        
+
         # has many?
         def multiple?
           true
         end
-        
+
         def virtual?
           true
         end

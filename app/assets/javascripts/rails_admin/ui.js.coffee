@@ -50,6 +50,8 @@ $('.form-horizontal legend').live 'click', ->
 
 $(document).ready ->
   $(document).trigger('rails_admin.dom_ready')
+  $(".draggable-association").draggable()
+  $(".droppable-association").droppable()
 
 $(document).live 'pjax:end', ->
   $(document).trigger('rails_admin.dom_ready')
