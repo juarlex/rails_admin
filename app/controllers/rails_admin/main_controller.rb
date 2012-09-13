@@ -29,7 +29,7 @@ module RailsAdmin
       self.send(params[:bulk_action]) if params[:bulk_action].in?(RailsAdmin::Config::Actions.all(:controller => self, :abstract_model => @abstract_model).select(&:bulkable?).map(&:route_fragment))
     end
 
-    def list_entries(model_config = @model_config, auth_scope_key = :index, additional_scope = get_association_scope_from_params, pagination = !(params[:associated_collection] || params[:all]))
+    def list_entries(model_config = @model_config, auth_scope_key = :index, additional_scope = get_association_scope_from_params, pagination = !(params[:associated_collection] || params[:all] || params[:bulk_ids]))
       scope = model_config.abstract_model.scoped
       if auth_scope = @authorization_adapter && @authorization_adapter.query(auth_scope_key, model_config.abstract_model)
         scope = scope.merge(auth_scope)
@@ -113,7 +113,7 @@ module RailsAdmin
     end
 
     def check_for_cancel
-      if params[:_continue]
+      if params[:_continue] || (params[:bulk_action] && !params[:bulk_ids])
         redirect_to(back_or_index, :flash => { :info => t("admin.flash.noaction") })
       end
     end

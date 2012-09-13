@@ -3,9 +3,17 @@
 require 'spec_helper'
 
 describe RailsAdmin::MainController do
+  
+  describe "#check_for_cancel" do
+    
+    it "should redirect to back if params[:bulk_ids] is nil when params[:bulk_action] is present" do
+      controller.stub(:back_or_index) { raise StandardError.new('redirected back') }
+      expect { get :bulk_delete, { :model_name => "player", :bulk_action =>"bulk_delete" } }.to raise_error('redirected back')
+      expect { get :bulk_delete, { :model_name => "player", :bulk_action =>"bulk_delete", :bulk_ids => [] } }.to_not raise_error('redirected back')
+    end
+  end
 
-
-  describe "get_sort_hash" do
+  describe "#get_sort_hash" do
     it 'should work with belongs_to associations with label method virtual' do
       controller.params = { :sort => "parent_category", :model_name =>"categories" }
       controller.send(:get_sort_hash, RailsAdmin.config(Category)).should == {:sort=>"categories.parent_category_id", :sort_reverse=>true}
@@ -17,19 +25,30 @@ describe RailsAdmin::MainController do
     end
   end
 
-  describe "list_entries called from view" do
+  describe "#list_entries called from view" do
     before do
-      @teams = 40.times.map { FactoryGirl.create :team }
+      @teams = 21.times.map { FactoryGirl.create :team }
       controller.params = { :model_name => "teams" }
     end
 
     it "should paginate" do
-      controller.list_entries(RailsAdmin.config(Team), :index, nil, false).to_a.length.should == 40
+      controller.list_entries(RailsAdmin.config(Team), :index, nil, false).to_a.length.should == 21
       controller.list_entries(RailsAdmin.config(Team), :index, nil, true).to_a.length.should == 20
     end
   end
 
-  describe "list_entries for associated_collection" do
+  describe "#list_entries called with bulk_ids" do
+    before do
+      @teams = 21.times.map { FactoryGirl.create :team }
+      controller.params = { :model_name => "teams", :bulk_action => "bulk_delete", :bulk_ids => @teams.map(&:id) }
+    end
+
+    it "should not paginate" do
+      controller.list_entries(RailsAdmin.config(Team), :bulk_delete).to_a.length.should == 21
+    end
+  end
+
+  describe "#list_entries for associated_collection" do
     before do
       @team = FactoryGirl.create :team
       controller.params = { :associated_collection => "players", :current_action => "update", :source_abstract_model => 'team', :source_object_id => @team.id, :model_name => "player", :action => 'index' }
@@ -137,7 +156,7 @@ describe RailsAdmin::MainController do
           show
         end
       end
-      
+
       RailsAdmin.config NestedFieldTest do
         configure :created_at do
           show
@@ -161,9 +180,9 @@ describe RailsAdmin::MainController do
           }
         }
       }
-      
+
       controller.send(:sanitize_params_for!, :create, RailsAdmin.config(FieldTest), controller.params['field_test'])
-      
+
       controller.params.should == {
         "field_test"=>{
           :datetime_field=>'Sun, 01 Aug 2010 00:00:00 UTC +00:00', 

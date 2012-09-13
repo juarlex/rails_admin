@@ -33,28 +33,15 @@ end
 
 group :mongoid do
   gem 'mongoid', '~> 3.0'
-  gem 'mongoid-paperclip', :require => 'mongoid_paperclip', :git => 'git://github.com/meskyanichi/mongoid-paperclip.git', :branch => 'develop'
+  gem 'mongoid-paperclip', '~> 0.0.8', :require => 'mongoid_paperclip'
   gem 'carrierwave-mongoid', :require => 'carrierwave/mongoid', :git => 'git://github.com/jnicklas/carrierwave-mongoid.git', :branch => 'mongoid-3.0'
 end
 
 group :debug do
-  platform :mri_18 do
-    gem 'ruby-debug'
-    gem 'linecache'
-  end
-
   platform :mri_19 do
-    gem 'ruby-debug19'
+    gem 'debugger'
     gem 'simplecov', :require => false
   end
-
-  platform :jruby do
-    gem 'ruby-debug'
-  end
-end
-
-platforms :jruby, :mingw_18, :ruby_18 do
-  gem 'fastercsv', '~> 1.5'
 end
 
 group :development, :test do

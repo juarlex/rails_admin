@@ -9,6 +9,14 @@ module RailsAdmin
         include RailsAdmin::Config::Proxyable
         include RailsAdmin::Config::Configurable
         include RailsAdmin::Config::Hideable
+        
+        register_instance_option :only do
+          nil
+        end
+
+        register_instance_option :except do
+          []
+        end
 
         # http://twitter.github.com/bootstrap/base-css.html#icons
         register_instance_option :link_icon do
@@ -17,11 +25,16 @@ module RailsAdmin
 
         # Should the action be visible
         register_instance_option :visible? do
-          authorized? && (bindings[:abstract_model] ? bindings[:abstract_model].config.with(bindings).try(:visible?) : true)
+          authorized? and (
+            bindings[:abstract_model].nil? or (
+              (only.nil? or [only].flatten.map(&:to_s).include?(bindings[:abstract_model].model.to_s)) and
+              ![except].flatten.map(&:to_s).include?(bindings[:abstract_model].model.to_s) and
+              bindings[:abstract_model].config.with(bindings).visible?
+          ))
         end
 
         register_instance_option :authorized? do
-          bindings[:controller] ? bindings[:controller].authorized?(self.authorization_key, bindings[:abstract_model], bindings[:object]) : true
+          bindings[:controller].nil? or bindings[:controller].authorized?(self.authorization_key, bindings[:abstract_model], bindings[:object])
         end
 
         # Is the action acting on the root level (Example: /admin/contact)
