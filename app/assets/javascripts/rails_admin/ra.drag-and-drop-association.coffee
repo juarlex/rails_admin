@@ -14,7 +14,7 @@ droppable_link = (resource) ->
 
 move_records_per_association = (orig_resource, dest_resource) ->
   new_id = $(dest_resource.parentNode.parentNode).find('#bulk_ids_')[0].value
-  association_name = $(orig_resource).attr('acceptable-association')
+  association_name = $(orig_resource).attr('data-acceptable-association')
   $.ajax
     url: $(orig_resource).attr('href')
     type: 'PUT'
@@ -33,9 +33,9 @@ move_records_per_association = (orig_resource, dest_resource) ->
       droppable_link(dest_resource)
 
 droppable_least_of_all_me = (orig_resource) ->
-  association_name = $(orig_resource).attr('acceptable-association')
+  association_name = $(orig_resource).attr('data-acceptable-association')
   $('.drag-and-drop-associated-records.'+association_name).each ->
-    if (this.href != orig_resource.href) && ($(this).attr('acceptable-association') == association_name)
+    if (this.href != orig_resource.href) && ($(this).attr('data-acceptable-association') == association_name)
       $(this).droppable
         accept: '.'+association_name
         activeClass: 'ui-state-hover'

@@ -34,7 +34,7 @@ module RailsAdmin
                                                           :model_name => abstract_model.to_param,
                                                           :id => bindings[:object].id),
                                                           :class => "drag-and-drop-associated-records #{value.model_name.pluralize.underscore} btn btn-medium",
-                                                          'acceptable-association' => value.model_name.pluralize.underscore,
+                                                          'data-acceptable-association' => value.model_name.pluralize.underscore,
                                                           :remote => true)
           end
 
