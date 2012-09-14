@@ -24,7 +24,8 @@ move_records_per_association = (orig_resource, dest_resource) ->
     dataType: 'html'
     async: false
     success: (data) ->
-      orig_resource.children().first().html(association_name + ': 0')
+      label = orig_resource.children().first().html().replace(/\:\s(\d)+$/,': 0')
+      orig_resource.children().first().html(label)
       orig_resource.parent().contents().filter(->
           !$(this).hasClass('drag-and-drop-associated-records')
         ).remove()
@@ -46,10 +47,13 @@ $('.drag-and-drop-associated-records').live 'hover', ->
   draggable_link(this)
 
 $('.drag-and-drop-associated-records').live 'drop', (event, ui) ->
+  $(this).addClass("btn-warning")
   if confirm('Do you want to move these records')
     move_records_per_association(ui.draggable, this)
   else
     draggable_link(ui.draggable)
+  $(this).removeClass("btn-warning")
+  $(this).css('position', '')
 
 $('.drag-and-drop-associated-records').live 'click', (e) ->
   e.preventDefault()

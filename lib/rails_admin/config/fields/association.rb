@@ -26,15 +26,16 @@ module RailsAdmin
           end.to_sentence.html_safe
 
           if value.is_a? Array
-            wording = [value.model_name.to_s.pluralize.humanize, value.size].join(": ")
+            association_name = value.model_name.pluralize.underscore
+            wording = [::I18n.t(abstract_model.model.model_name.human(:default=> association_name), :scope => 'admin', :default => association_name), value.size].join(': ')
             action = RailsAdmin::Config::Actions.find(:move_records_per_association, { :controller => v.controller, :abstract_model => abstract_model, :object => bindings[:object] })
             icon_and_wording = v.content_tag(:span, wording, :class => action.link_icon)
             html += v.tag("br")
             html += v.link_to(icon_and_wording, v.url_for(:action => action.action_name,
                                                           :model_name => abstract_model.to_param,
                                                           :id => bindings[:object].id),
-                                                          :class => "drag-and-drop-associated-records #{value.model_name.pluralize.underscore} btn btn-medium",
-                                                          'data-acceptable-association' => value.model_name.pluralize.underscore,
+                                                          :class => "drag-and-drop-associated-records #{association_name} btn btn-medium",
+                                                          'data-acceptable-association' => association_name,
                                                           :remote => true)
           end
 
