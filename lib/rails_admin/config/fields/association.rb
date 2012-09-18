@@ -27,7 +27,7 @@ module RailsAdmin
 
           if value.is_a? Array
             association_name = value.model_name.pluralize.underscore
-            wording = [::I18n.t(abstract_model.model.model_name.human(:default=> association_name), :scope => 'admin', :default => association_name), value.size].join(': ')
+            wording = value.model_name.human(:count => 2, :default=> association_name)
             action = RailsAdmin::Config::Actions.find(:move_records_per_association, { :controller => v.controller, :abstract_model => abstract_model, :object => bindings[:object] })
             icon_and_wording = v.content_tag(:span, wording, :class => action.link_icon)
             html += v.tag("br")
