@@ -49,3 +49,5 @@ group :development, :test do
   gem 'devise'
   gem 'paperclip'
 end
+
+gemspec
